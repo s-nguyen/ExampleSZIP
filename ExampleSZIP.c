@@ -5,10 +5,13 @@
  *      Author: yorha
  */
 
+#define _POSIX_C_SOURCE 199309L
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <time.h>
 #include <szlib.h>
 
 #define w 800
@@ -31,8 +34,11 @@ int main() {
 	printf("Input %d bytes\n", sz);
 
 	long int osz;
+	struct timespec start, stop;
+	clock_gettime(CLOCK_MONOTONIC, &start);
 	osz = test_encoding(8, ibuf, sz, obuf, 1);
-	printf("Comprerssed %ld Bytes\n", osz);
+	clock_gettime(CLOCK_MONOTONIC, &stop);
+	printf("Comprerssed %ld Bytes. Time taken: %ld.%09ld\n", osz, (stop.tv_sec - start.tv_sec), (stop.tv_nsec - start.tv_nsec));
 
 	printf("Decompressed %ld Bytes\n", test_decoding(8, obuf, osz, dbufOffset, sizeof(dbuf), 1));
 	image = fopen("decompressed.pgm", "wb");
